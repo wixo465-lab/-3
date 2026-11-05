@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>لوحة التحكم | متجري</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-body">
+
+  <!-- ===== شاشة الدخول ===== -->
+  <div class="login-view" id="loginView">
+    <div class="login-card" id="loginCard">
+      <div class="lock">🔐</div>
+      <h2>لوحة تحكم المتجر</h2>
+      <p>أدخل كلمة السر للوصول إلى إدارة المنتجات والإعدادات</p>
+      <div class="login-err" id="loginErr" hidden>❌ كلمة السر غير صحيحة، حاول مرة أخرى</div>
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginPw">كلمة السر</label>
+          <div style="position:relative">
+            <input class="input" type="password" id="loginPw" placeholder="••••••••" autocomplete="current-password" required style="padding-inline-start:42px">
+            <button type="button" id="pwEye" aria-label="إظهار كلمة السر" style="position:absolute;inset-inline-start:8px;top:50%;transform:translateY(-50%);border:none;background:none;font-size:17px">👁️</button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-gold btn-block btn-lg">دخول</button>
+      </form>
+      <p class="login-hint">كلمة السر الافتراضية: <b>admin123</b> — غيّرها من «الإعدادات» بعد الدخول</p>
+    </div>
+  </div>
+
+  <!-- ===== التطبيق ===== -->
+  <div class="admin-layout" id="appView" hidden>
+
+    <!-- الشريط الجانبي -->
+    <aside class="admin-side">
+      <div class="brand">
+        <div class="brand-fallback" id="sideLogo">🛍️</div>
+        <span class="brand-name" id="sideBrandName">متجري</span>
+      </div>
+      <nav class="admin-nav">
+        <button type="button" class="nav-btn active" data-tab="tab-products"><span class="ico">📦</span> المنتجات</button>
+        <button type="button" class="nav-btn" data-tab="tab-cats"><span class="ico">🗂️</span> الأقسام</button>
+        <button type="button" class="nav-btn" data-tab="tab-settings"><span class="ico">⚙️</span> الإعدادات</button>
+      </nav>
+      <div class="side-bottom">
+        <div class="side-meter">
+          <span id="meterTxt"></span>
+          <div class="meter"><div class="meter-fill" id="meterFill" style="width:0%"></div></div>
+        </div>
+        <button type="button" class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
+      </div>
+    </aside>
+
+    <!-- المحتوى -->
+    <main class="admin-main">
+      <div class="admin-top">
+        <h2>🛍️ إدارة المتجر</h2>
+        <span class="spacer"></span>
+        <a class="btn btn-ghost btn-sm" href="index.html" target="_blank">👁️ معاينة المتجر</a>
+        <button type="button" class="btn btn-gold btn-sm js-export">⬇️ تصدير data.js (نشر التعديلات)</button>
+      </div>
+
+      <!-- لافتات -->
+      <div class="banner banner-danger" id="warnWa" hidden>
+        <span class="ico">⚠️</span>
+        <div><b>لم تقم بتعيين رقم واتساب بعد!</b> اذهب إلى «الإعدادات» وأدخل رقمك مع رمز الدولة بدون + وبدون 0 (مثال للمغرب: <b>212612345678</b>) حتى يعمل زر الطلب.</div>
+      </div>
+      <div class="banner banner-info" id="draftBanner" hidden></div>
+
+      <!-- ===== تبويب المنتجات ===== -->
+      <section class="tab-pane" id="tab-products">
+        <div class="stat-cards">
+          <div class="stat"><span class="ic">📦</span><div><div class="num" id="stProducts">0</div><div class="lbl">منتج</div></div></div>
+          <div class="stat"><span class="ic">🗂️</span><div><div class="num" id="stCats">0</div><div class="lbl">قسم</div></div></div>
+          <div class="stat"><span class="ic">🖼️</span><div><div class="num" id="stImgs">0</div><div class="lbl">صورة</div></div></div>
+          <div class="stat"><span class="ic">⭐</span><div><div class="num" id="stFeat">0</div><div class="lbl">منتج مميز</div></div></div>
+        </div>
+
+        <details class="help-box">
+          <summary>📖 كيف أنشر تعديلاتي لجميع الزوار؟ (مهم — اقرأ مرة واحدة)</summary>
+          <div class="help-body">
+            <p>الموقع عبارة عن ملفات ثابتة، والبيانات المنشورة للزوار تُقرأ من ملف <b>js/data.js</b>. التعديلات التي تجريها هنا تُحفظ في متصفحك كـ«نسخة معاينة» فورية. لنشرها للجميع:</p>
+            <div class="help-steps">
+              <div class="help-step">أجرِ تعديلاتك (منتجات، أقسام، إعدادات) — سترى النتيجة فوراً في «معاينة المتجر».</div>
+              <div class="help-step">اضغط زر <b>«⬇️ تصدير data.js»</b> أعلى الصفحة — سينزل الملف المحدَّث إلى جهازك.</div>
+              <div class="help-step">ارفع الملف إلى مجلد <b>js</b> في مستودع موقعك (GitHub: اضغط Add file ← Upload files ← اسحب data.js إلى مجلد js ← Commit changes)، مع استبدال القديم.</div>
+              <div class="help-step">بعد دقيقة تقريباً يرى جميع الزوار التعديلات. انتهى! 🎉</div>
+            </div>
+            <p>💡 قبل رفع الملف، احذف «نسخة المعاينة» من الإعدادات ← «استعادة النسخة المنشورة» لتتأكد أن ما سيراه الزوار هو نفسه الملف المرفوع.</p>
+          </div>
+        </details>
+
+        <div class="section-head">
+          <h3>قائمة المنتجات</h3>
+          <span class="spacer"></span>
+          <button type="button" class="btn btn-gold js-add-prod">➕ إضافة منتج جديد</button>
+        </div>
+
+        <div class="card" id="prodTableWrap">
+          <div class="table-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>الصورة</th><th>المنتج</th><th>السعر</th><th>القسم</th><th>مميز</th><th style="text-align:end">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="prodTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="empty" id="prodEmpty" hidden>
+          <div class="ic">📦</div>
+          <h3>لا توجد منتجات بعد</h3>
+          <p>ابدأ بإضافة أول منتج في متجرك</p>
+          <button type="button" class="btn btn-gold js-add-prod" style="margin-top:10px">➕ إضافة منتج جديد</button>
+        </div>
+      </section>
+
+      <!-- ===== تبويب الأقسام ===== -->
+      <section class="tab-pane" id="tab-cats" hidden>
+        <div class="section-head">
+          <h3>🗂️ أقسام المتجر</h3>
+          <span class="spacer"></span>
+        </div>
+        <div class="card" id="catRows"></div>
+        <div class="cat-add">
+          <input class="input" type="text" id="newCatName" placeholder="اسم القسم الجديد… مثال: إلكترونيات">
+          <button type="button" class="btn btn-gold" id="catAddBtn">➕ إضافة قسم</button>
+        </div>
+        <p class="hint" style="color:#7d8a80;font-size:12.5px;margin-top:10px">💡 لتغيير اسم قسم: عدّل الاسم في الحقل ثم اضغط في أي مكان خارج الحقل ليُحفظ تلقائياً.</p>
+      </section>
+
+      <!-- ===== تبويب الإعدادات ===== -->
+      <section class="tab-pane" id="tab-settings" hidden>
+
+        <div class="set-group">
+          <h3>🏪 معلومات المتجر</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>اسم المتجر *</label>
+              <input class="input" type="text" id="s-storeName" placeholder="متجري">
+            </div>
+            <div class="field">
+              <label>العملة</label>
+              <input class="input" type="text" id="s-currency" placeholder="درهم">
+            </div>
+            <div class="field full">
+              <label>شعار المتجر (الشعار يظهر في الأعلى بدل الرمز الافتراضي)</label>
+              <div class="logo-row">
+                <div class="logo-preview" id="logoPreview">🛍️</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <label class="btn btn-outline btn-sm" style="cursor:pointer">📤 رفع شعار<input type="file" id="logoInput" accept="image/*" hidden></label>
+                  <button type="button" class="btn btn-danger-soft btn-sm" id="logoRemove">🗑️ إزالة الشعار</button>
+                </div>
+              </div>
+            </div>
+            <div class="field full">
+              <label>الشعار النصي (يظهر أعلى الصفحة وفي وصف المتجر)</label>
+              <input class="input" type="text" id="s-tagline" placeholder="منتجات مختارة بعناية… وجودة تستحق ثقتك">
+            </div>
+          </div>
+        </div>
+
+        <div class="set-group">
+          <h3>🎨 البانر الرئيسي وشريط الثقة</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>العنوان الرئيسي</label>
+              <input class="input" type="text" id="s-heroTitle" placeholder="مرحباً بكم في متجري 🌟">
+            </div>
+            <div class="field">
+              <label>النص التوضيحي</label>
+              <input class="input" type="text" id="s-heroText" placeholder="تسوّق واطلب مباشرة عبر واتساب">
+            </div>
+            <div class="field full">
+              <label>شريط الثقة (4 عناوين تظهر أسفل البانر)</label>
+              <div class="badges-grid">
+                <input class="input" type="text" id="s-badge0" placeholder="مثال: الدفع عند الاستلام">
+                <input class="input" type="text" id="s-badge1" placeholder="مثال: توصيل سريع لجميع المدن">
+                <input class="input" type="text" id="s-badge2" placeholder="مثال: منتجات أصلية 100%">
+                <input class="input" type="text" id="s-badge3" placeholder="مثال: دعم عبر واتساب">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="set-group">
+          <h3>💬 واتساب — رقم الطلبات (الأهم!)</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>رقم واتساب مع رمز الدولة *</label>
+              <input class="input" type="text" id="s-whatsapp" placeholder="212612345678" dir="ltr" style="text-align:start">
+              <span class="hint">⚠️ بدون + وبدون 0 في البداية. المغرب: 212 + رقمك بدون 0 (مثال: 212612345678). هذا الرقم يستقبل جميع الطلبات.</span>
+            </div>
+            <div class="field">
+              <label>جملة بداية رسالة الطلب</label>
+              <input class="input" type="text" id="s-waGreeting" placeholder="مرحباً، أريد طلب هذا المنتج:">
+              <span class="hint">سيضيف الموقع تلقائياً اسم المنتج والسعر ورابطه بعد هذه الجملة.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="set-group">
+          <h3>📄 التذييل</h3>
+          <div class="field">
+            <label>نبذة عن المتجر (تظهر في أسفل الصفحة)</label>
+            <textarea class="textarea" id="s-footerText" placeholder="متجري — متجر إلكتروني…"></textarea>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:26px">
+          <button type="button" class="btn btn-gold btn-lg" id="saveSettings">💾 حفظ الإعدادات</button>
+        </div>
+
+        <div class="set-group">
+          <h3>🛡️ الأمان — كلمة السر</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label>كلمة السر الحالية</label>
+              <input class="input" type="password" id="pw-current" autocomplete="off">
+            </div>
+            <div class="field">
+              <label>كلمة السر الجديدة (6 أحرف على الأقل)</label>
+              <input class="input" type="password" id="pw-new" autocomplete="new-password">
+            </div>
+            <div class="field">
+              <label>تأكيد كلمة السر الجديدة</label>
+              <input class="input" type="password" id="pw-confirm" autocomplete="new-password">
+            </div>
+            <div class="field" style="justify-content:flex-end">
+              <button type="button" class="btn btn-outline" id="pwChangeBtn">🔑 تغيير كلمة السر</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="set-group export-box">
+          <h3>📤 النشر والنسخ الاحتياطي</h3>
+          <div class="big-ico">🚀</div>
+          <p><b>لنشر تعديلاتك لجميع الزوار:</b> اضغط الزر أدناه لتنزيل <b>data.js</b> ثم ارفعه إلى مجلد <b>js</b> في موقعك مستبدلاً الملف القديم.</p>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+            <button type="button" class="btn btn-gold btn-lg js-export">⬇️ تصدير data.js (نشر التعديلات)</button>
+            <a class="btn btn-outline btn-lg" href="index.html" target="_blank">👁️ معاينة المتجر</a>
+          </div>
+          <hr style="border:none;border-top:1.5px dashed var(--line);margin:16px 0">
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+            <button type="button" class="btn btn-ghost btn-sm" id="exportJson">💾 تصدير نسخة احتياطية (JSON)</button>
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">📥 استيراد نسخة احتياطية<input type="file" id="importJson" accept=".json,application/json" hidden></label>
+            <button type="button" class="btn btn-ghost btn-sm" id="wipeStore" style="color:var(--danger);border-color:#f3c1c1">🧹 تفريغ المتجر (حذف المنتجات التجريبية)</button>
+          </div>
+          <p style="font-size:11.5px;margin-top:12px">النسخة الاحتياطية مفيدة لنقل بياناتك إلى جهاز/متصفح آخر: صدّرها هنا ثم استوردها هناك.</p>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- ===== نافذة إضافة/تعديل منتج ===== -->
+  <div class="modal prod-modal" id="prodModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" id="pfClose" aria-label="إغلاق">✕</button>
+      <div class="pm-form">
+        <h3 id="pfTitle">➕ إضافة منتج جديد</h3>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>اسم المنتج *</label>
+            <input class="input" type="text" id="f-name" placeholder="مثال: ساعة ذكية Smart Pro">
+          </div>
+          <div class="field">
+            <label>القسم</label>
+            <select class="select" id="f-cat"></select>
+          </div>
+          <div class="field">
+            <label>السعر *</label>
+            <input class="input" type="number" id="f-price" min="0" step="0.01" placeholder="499">
+          </div>
+          <div class="field">
+            <label>السعر قبل الخصم (اختياري — يظهر مشطوباً)</label>
+            <input class="input" type="number" id="f-old" min="0" step="0.01" placeholder="649">
+          </div>
+          <div class="field full">
+            <label>وصف قصير (سطر واحد يظهر في البطاقة)</label>
+            <input class="input" type="text" id="f-short" placeholder="شاشة AMOLED، مقاومة للماء، بطارية 10 أيام">
+          </div>
+          <div class="field full">
+            <label>الوصف الكامل (يظهر في صفحة التفاصيل)</label>
+            <textarea class="textarea" id="f-desc" placeholder="اكتب مواصفات المنتج وفوائده…"></textarea>
+          </div>
+          <div class="field full">
+            <label class="check-row"><input type="checkbox" id="f-feat"> ⭐ منتج مميز (يظهر في شريط «منتجات مميزة» أعلى الصفحة)</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label> صور المنتج (حتى 8 صور — الصورة الأولى هي الرئيسية)</label>
+          <label class="upload-zone" for="f-imgInput">
+            <span class="ic">📷</span>
+            <span>اضغط لاختيار صور من هاتفك أو حاسوبك — سيتم ضغطها تلقائياً لتسريع الموقع</span>
+          </label>
+          <input type="file" id="f-imgInput" accept="image/*" multiple hidden>
+          <div class="img-grid" id="f-imgThumbs" style="margin-top:11px"></div>
+        </div>
+
+        <div class="field">
+          <label>مراجعات وتقييمات العملاء</label>
+          <div class="rev-add">
+            <input class="input" type="text" id="rev-name" placeholder="اسم العميل">
+            <select class="select" id="rev-stars">
+              <option value="5">★★★★★</option><option value="4">★★★★</option>
+              <option value="3">★★★</option><option value="2">★★</option><option value="1">★</option>
+            </select>
+            <input class="input txt-in" type="text" id="rev-text" placeholder="نص المراجعة…">
+            <button type="button" class="btn btn-outline" id="revAddBtn">➕ إضافة</button>
+          </div>
+          <div id="revRows"></div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" id="pfCancel">إلغاء</button>
+          <button type="button" class="btn btn-gold btn-lg" id="pfSave">💾 حفظ المنتج</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastBox" aria-live="polite"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
